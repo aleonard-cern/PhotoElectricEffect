@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Name=Photoelectric Effect      
+Comment=Launch the software for the Photoelectric Effect
+Exec=/usr/local/bin/PhotoElectricEffect/PhotoElectricEffect
+Icon=/usr/local/PhotoElectricEffect/iconPhotoElectricEffect.png
+Terminal=false
+Type=Application
+Categories=Utility;Application;
