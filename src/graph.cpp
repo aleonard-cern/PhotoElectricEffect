@@ -19,9 +19,9 @@ void graph::init(const QString &title_, const QString& xLabel_, const QString &y
 {
 
     max = 1;
-    xMin = -1;
-    xMax = 1;
-    nPoints = 0;
+    xMin = 800;
+    xMax = 1200;
+    nPoints = 9;
     title = title_;
     xLabel = xLabel_;
     yLabel = yLabel_;
@@ -30,8 +30,8 @@ void graph::init(const QString &title_, const QString& xLabel_, const QString &y
     qcp->rescaleAxes();
     qcp->xAxis->setLabel(xLabel);
     qcp->yAxis->setLabel(yLabel);
-    qcp->xAxis->setRange(xMin*1.1, xMax*1.1);
-    qcp->yAxis->setRange(-1.1, 1.1);
+    qcp->xAxis->setRange(xMin*0.90, xMax*1.10);
+    qcp->yAxis->setRange(0.0, 1.5);
     qcp->axisRect()->setupFullAxesBox();
 
     // title
@@ -39,14 +39,12 @@ void graph::init(const QString &title_, const QString& xLabel_, const QString &y
     qcp->plotLayout()->addElement(0, 0, new QCPPlotTitle(qcp, title));
 
 
-    /*
-    QLinearGradient plotGradient;
+    /*QLinearGradient plotGradient;
     plotGradient.setStart(0, 0);
     plotGradient.setFinalStop(0, 350);
     plotGradient.setColorAt(0, QColor(180, 180, 180));
     plotGradient.setColorAt(1, QColor(150, 150, 150));
-    qcp->setBackground(plotGradient);
-    */
+    qcp->setBackground(plotGradient);*/
 }
 
 
@@ -56,7 +54,6 @@ void graph::clearXY()
     x.clear();
     y.clear();
     ey.clear();
-    nPoints = 0;
 
 }
 
@@ -69,7 +66,7 @@ void graph::adjustPlot(double xMin_, double xMax_)
     qcp->graph(0)->setDataValueError(x, y, ey);
 
     qcp->rescaleAxes();
-    qcp->xAxis->setRange(xMin*1.01, xMax*1.01);
+    qcp->xAxis->setRange(xMin*0.9, xMax*1.1);
     qcp->replot();
 
 }
@@ -83,37 +80,35 @@ void graph::addPoint(double x_, double y_, double ey_)
     ey.push_back(ey_);
 
 
-    if (nPoints == 1) {
-        xMin = x_ - 0.15 * fabs(x_);
-        xMax = x_ + 0.15 * fabs(x_);
+    qcp->graph(0)->clearData();
+    qcp->graph(0)->setDataValueError(x, y, ey);
+    qcp->yAxis->setRange(0, 1.2);
+    qcp->replot();
+}
 
-        yMin = y_ - 0.15 * fabs(y_);
-        yMax = y_ + 0.15 * fabs(y_);
-    }
-    else {
-        if (xMin > x_) xMin = x_ - 0.15 * fabs(x_);
-        if (xMax < x_) xMax = x_ + 0.15 * fabs(x_);
-        if (yMin > y_) yMin = y_ - 0.15 * fabs(y_);
-        if (yMax < y_) yMax = y_ + 0.15 * fabs(y_);
-    }
+void graph::addPoint(double x_, double y_, double eylow_, double eyhigh_)
+{
 
-
+    nPoints++;
+    x.push_back(x_);
+    y.push_back(y_);
+    eylow.push_back(eylow_);
+    eyhigh.push_back(eyhigh_);
 
 
     qcp->graph(0)->clearData();
-    qcp->graph(0)->setDataValueError(x, y, ey);
-    qcp->xAxis->setRange(xMin, xMax);
-    qcp->yAxis->setRange(yMin, yMax);
+    qcp->graph(0)->setDataValueError(x, y, eylow, eyhigh);
+    qcp->yAxis->setRange(0, 1.2);
     qcp->replot();
 }
 
 void graph::addEfficiencyPoint(double x_, uint num_, uint den_)
 {
     if (den_ != 0) {
-        addPoint(x_, num_*1.0/den_, sqrt(num_)*1.0/den_);
+        addPoint(x_, num_*1.0/den_, sqrt(num_*(1-num_*1.0/den_))*1.0/den_);
     }
     else {
-        qDebug() << "Division by 0, denominator was null, skipin this point";
+        qDebug() << "Division by 0, denominator was null, skiping this point";
     }
 }
 

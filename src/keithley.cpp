@@ -51,10 +51,10 @@ void Keithley::startRun(const QString &port, double v_from, double v_to, double 
 
     for (double v = v_from; (int)(v*1000) <= (int)(v_to*1000); v += v_by)
     {
-        addCommand(":SOUR:VOLT " + QString::number(v, 'f', 3), "");
+        addCommand(":SOUR:VOLT " + QString::number(v, 'f', 3));
         addCommand(":FETC?", "CURRENT");
     }
-    addCommand(":SOUR:VOLT " + QString::number(0.0, 'f', 3), "");
+    addCommand(":SOUR:VOLT " + QString::number(0.0, 'f', 3));
     addCommand(":OUTP:STATE OFF", "", 500);
 
     nCommands = commands.size();
@@ -66,8 +66,8 @@ void Keithley::stopRun()
 {
     nCommands = 0;
     clearCommands();
-    addCommand(":SOUR:VOLT " + QString::number(0.0, 'f', 3), ""); // this is not a bug, it is needed twice !
-    addCommand(":SOUR:VOLT " + QString::number(0.0, 'f', 3), "");
+    addCommand(":SOUR:VOLT " + QString::number(0.0, 'f', 3)); // this is not a bug, it is needed twice !
+    addCommand(":SOUR:VOLT " + QString::number(0.0, 'f', 3));
     addCommand(":OUTP:STATE OFF", "");
     commandIter = 0;
     nCommands = commands.size();

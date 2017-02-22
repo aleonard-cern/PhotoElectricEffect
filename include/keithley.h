@@ -18,7 +18,7 @@ private:
     int nCommands;
     QString portName;
     void clearCommands();
-    void addCommand(const QString &command, const QString &type, const int delay = 200);
+    void addCommand(const QString &command, const QString &type = "", const int delay = 200);
 
 
     void next();

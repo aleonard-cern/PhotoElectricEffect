@@ -15,7 +15,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     keithley = new Keithley(this);
     gr = new graph(ui->qcp_gr, "Current vs. Tension", "Tension (V)", "Current (µA)");
-    //gr->adjustPlot(-1, 1);
+    gr->adjustPlot(-1.2, 1);
 
     connect(keithley, &Keithley::measurement, this, &MainWindow::addMeasurement);
     connect(keithley, &Keithley::updateProgressBar, this, &MainWindow::updateProgressBar);
