@@ -42,6 +42,8 @@ private slots:
 
     void on_pushButton__stop_run_clicked();
 
+    void on_pushButton_reload_clicked();
+
 private:
     void setControlsEnabled(bool enable);
 

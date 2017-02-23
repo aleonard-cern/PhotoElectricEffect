@@ -45,4 +45,4 @@ HEADERS  += include/mainwindow.h \
     include/qcustomplot.h \
     include/graph.h
 
-FORMS    += form/mainwindow.ui
+FORMS += form/mainwindow.ui \

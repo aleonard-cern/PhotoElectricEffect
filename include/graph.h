@@ -27,7 +27,7 @@ public:
     void addPoint(double x_, double y_, double ey_ = 0.0);
     void addPoint(double x_, double y_, double eylow_, double eyhigh_);
     void addEfficiencyPoint(double x_, uint num_, uint den_);
-    void adjustPlot(double xMin_, double xMax_);
+    void adjustPlot(double xMin_, double xMax_, double yMin_, double yMax_);
     double getXMin();
     double getXMax();
     bool setLogX();

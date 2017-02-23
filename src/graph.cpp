@@ -19,9 +19,11 @@ void graph::init(const QString &title_, const QString& xLabel_, const QString &y
 {
 
     max = 1;
-    xMin = 800;
-    xMax = 1200;
-    nPoints = 9;
+    xMin = -1;
+    xMax = 1;
+    yMin = -1;
+    yMax = 1;
+    nPoints = 0;
     title = title_;
     xLabel = xLabel_;
     yLabel = yLabel_;
@@ -31,7 +33,7 @@ void graph::init(const QString &title_, const QString& xLabel_, const QString &y
     qcp->xAxis->setLabel(xLabel);
     qcp->yAxis->setLabel(yLabel);
     qcp->xAxis->setRange(xMin*0.90, xMax*1.10);
-    qcp->yAxis->setRange(0.0, 1.5);
+    qcp->yAxis->setRange(yMin*0.90, yMax*1.10);
     qcp->axisRect()->setupFullAxesBox();
 
     // title
@@ -57,16 +59,20 @@ void graph::clearXY()
 
 }
 
-void graph::adjustPlot(double xMin_, double xMax_)
+void graph::adjustPlot(double xMin_, double xMax_, double yMin_, double yMax_)
 {
 
     xMin = xMin_;
     xMax = xMax_;
 
+    yMin = yMin_;
+    yMax = yMax_;
+
     qcp->graph(0)->setDataValueError(x, y, ey);
 
     qcp->rescaleAxes();
     qcp->xAxis->setRange(xMin*0.9, xMax*1.1);
+    qcp->yAxis->setRange(yMin*0.9, yMax*1.1);
     qcp->replot();
 
 }
@@ -75,6 +81,21 @@ void graph::addPoint(double x_, double y_, double ey_)
 {
 
     nPoints++;
+    if (nPoints == 1) {
+        xMin = x_ - 0.1*fabs(x_);
+        xMax = x_ + 0.1*fabs(x_);
+
+        yMin = y_ - 0.1*fabs(y_);
+        yMax = y_ + 0.1*fabs(y_);
+    }
+    else {
+
+        xMin = qMin(xMin, x_ - 0.1*fabs(x_));
+        xMax = qMax(xMax, x_ + 0.1*fabs(x_));
+        yMin = qMin(yMin, y_ - 0.1*fabs(y_));
+        yMax = qMax(yMax, y_ + 0.1*fabs(y_));
+    }
+
     x.push_back(x_);
     y.push_back(y_);
     ey.push_back(ey_);
@@ -82,7 +103,8 @@ void graph::addPoint(double x_, double y_, double ey_)
 
     qcp->graph(0)->clearData();
     qcp->graph(0)->setDataValueError(x, y, ey);
-    qcp->yAxis->setRange(0, 1.2);
+    qcp->xAxis->setRange(xMin, xMax);
+    qcp->yAxis->setRange(yMin, yMax);
     qcp->replot();
 }
 
@@ -115,5 +137,6 @@ void graph::addEfficiencyPoint(double x_, uint num_, uint den_)
 void graph::clear()
 {
     clearXY();
-    adjustPlot(xMin, xMax);
+    nPoints = 0;
+    adjustPlot(xMin, xMax, yMin, yMax);
 }

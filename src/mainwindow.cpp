@@ -7,15 +7,13 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    
     ui->progressBar->setValue(0);
 
-    const auto infos = QSerialPortInfo::availablePorts();
-    for (const QSerialPortInfo &info : infos)
-        ui->comboBox_serial_ports->addItem(info.portName());
+    on_pushButton_reload_clicked();
 
     keithley = new Keithley(this);
-    gr = new graph(ui->qcp_gr, "Current vs. Tension", "Tension (V)", "Current (µA)");
-    gr->adjustPlot(-1.2, 1);
+    gr = new graph(ui->qcp_gr, "Current vs. Voltage", "Voltage (V)", "Current (µA)");
 
     connect(keithley, &Keithley::measurement, this, &MainWindow::addMeasurement);
     connect(keithley, &Keithley::updateProgressBar, this, &MainWindow::updateProgressBar);
@@ -94,4 +92,12 @@ void MainWindow::on_pushButton_clear_plot_clicked()
 void MainWindow::on_pushButton__stop_run_clicked()
 {
     keithley->stopRun();
+}
+
+void MainWindow::on_pushButton_reload_clicked()
+{
+    ui->comboBox_serial_ports->clear();
+    const auto infos = QSerialPortInfo::availablePorts();
+    for (const QSerialPortInfo &info : infos)
+        ui->comboBox_serial_ports->addItem(info.portName());
 }
