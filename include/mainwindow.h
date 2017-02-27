@@ -46,6 +46,9 @@ private slots:
 
 private:
     void setControlsEnabled(bool enable);
+    QString setFileName();
+    QFile* file;
+    QTextStream* stream;
 
 private:
 

@@ -10,6 +10,7 @@ MainWindow::MainWindow(QWidget *parent) :
     
     ui->progressBar->setValue(0);
 
+    setFileName();
     on_pushButton_reload_clicked();
 
     keithley = new Keithley(this);
@@ -18,6 +19,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(keithley, &Keithley::measurement, this, &MainWindow::addMeasurement);
     connect(keithley, &Keithley::updateProgressBar, this, &MainWindow::updateProgressBar);
     connect(keithley, &Keithley::rawAnswer, this, &MainWindow::showResponse);
+
 }
 
 MainWindow::~MainWindow()
@@ -25,9 +27,29 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+QString MainWindow::setFileName()
+{
+    //get current time
+    QDateTime time = QDateTime::currentDateTime();
+    QString timeString = time.toString();
+    qDebug() << timeString.replace(":", "_");
+    qDebug() << timeString.replace(" ", "_");
+
+    QString fileNameTmp = QStandardPaths::locate(QStandardPaths::DocumentsLocation, QString(), QStandardPaths::LocateDirectory);
+    fileNameTmp += "Data_";
+    fileNameTmp += timeString;
+    fileNameTmp += ".txt";
+    qDebug() << "This is the location: ";
+    qDebug() << fileNameTmp;
+    ui->lineEdit_fileName->setText(fileNameTmp);
+    return fileNameTmp;
+}
+
 void MainWindow::addMeasurement(double v, double c)
 {
     gr->addPoint(v, c*1e6);
+    (*stream) << QString::number(v) << " " << QString::number(c*1e6) << "\n";
+
 }
 
 
@@ -55,6 +77,11 @@ void MainWindow::processTimeout(const QString &s)
 void MainWindow::updateProgressBar(int value)
 {
     ui->progressBar->setValue(value);
+    if (value == 100 && stream != nullptr) {
+        delete stream;
+        file->close();
+        delete file;
+    }
 }
 
 void MainWindow::on_pushButton_send_command_clicked()
@@ -71,6 +98,19 @@ void MainWindow::on_pushButton_send_command_clicked()
 
 void MainWindow::on_pushButton_start_run_clicked()
 {
+    QString fileName = setFileName();
+    file = new QFile(fileName);
+
+    if (!file->open(QIODevice::ReadWrite | QIODevice::Append)) {
+        qDebug() << "Problem opening or creating the file:";
+        qDebug() << fileName;
+        file->close();
+        delete file;
+        return;
+    }
+    stream = new QTextStream(file);
+
+
     QString portName = ui->comboBox_serial_ports->currentText();
     double v_from = ui->doubleSpinBox_v_from->value();
     double v_to = ui->doubleSpinBox_v_to->value();
