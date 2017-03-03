@@ -6,6 +6,8 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
+    stream = nullptr;
+    file = nullptr;
     ui->setupUi(this);
     
     ui->progressBar->setValue(0);
@@ -79,8 +81,10 @@ void MainWindow::updateProgressBar(int value)
     ui->progressBar->setValue(value);
     if (value == 100 && stream != nullptr) {
         delete stream;
+        stream = nullptr;
         file->close();
         delete file;
+        file = nullptr;
     }
 }
 
@@ -106,6 +110,7 @@ void MainWindow::on_pushButton_start_run_clicked()
         qDebug() << fileName;
         file->close();
         delete file;
+        file = nullptr;
         return;
     }
     stream = new QTextStream(file);

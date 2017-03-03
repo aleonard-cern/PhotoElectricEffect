@@ -46,3 +46,5 @@ HEADERS  += include/mainwindow.h \
     include/graph.h
 
 FORMS += form/mainwindow.ui \
+
+QMAKE_CXXFLAGS += -std=c++0x
